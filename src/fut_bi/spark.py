@@ -1,5 +1,6 @@
 from pathling import PathlingContext  # pyright: ignore[reportMissingTypeStubs]
 from pyspark.sql import SparkSession
+from zipp import Path
 
 
 class FutPathlingContext:
@@ -12,17 +13,36 @@ class FutPathlingContext:
 
     @staticmethod
     def create(
-        appName: str,
+        app_name: str,
+        spark_master_url: str = "spark://spark-master-svc.bi-tools.svc.cluster.local:7077",
+        spark_additional_config: dict[str, str] | None = None,
+        hadoop_config: dict[str, str] | None = None,
+    ) -> PathlingContext:
+        import socket
+
+        ip = socket.gethostbyname(socket.gethostname())
+        return FutPathlingContext._create(
+            app_name,
+            spark_driver_host=ip,
+            spark_master_url=spark_master_url,
+            spark_additional_config=spark_additional_config,
+            hadoop_config=hadoop_config,
+        )
+
+    @staticmethod
+    def _create(
+        app_name: str,
         spark_driver_host: str,
         spark_master_url: str = "spark://spark-master-svc.bi-tools.svc.cluster.local:7077",
         spark_additional_config: dict[str, str] | None = None,
         hadoop_config: dict[str, str] | None = None,
     ) -> PathlingContext:
-        sparkConfig = SparkSession.builder.appName(appName).master(spark_master_url)
+        sparkConfig = SparkSession.builder.appName(app_name).master(spark_master_url)
 
         if spark_additional_config is None:
             spark_additional_config = {}
 
+        # XXX: Monkey-patch the ip-address so users don't need to pass it
         if hadoop_config is None:
             hadoop_config = {}
 
