@@ -1,0 +1,25 @@
+[project]
+name = "fut-bi"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Martin Bernstorff", email = "martinbernstorff@gmail.com" }
+]
+requires-python = ">=3.11"
+dependencies = [
+    "delta-spark>=4.0.0",
+    "pathling==9.1.0",
+    "pyspark>=4.0.1",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pyright>=1.1.407",
+    "pytest>=9.0.1",
+    "ruff>=0.14.7",
+]

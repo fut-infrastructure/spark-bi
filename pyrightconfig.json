@@ -1,0 +1,13 @@
+{
+    "exclude": [
+        "**/node_modules",
+        "**/__pycache__",
+        "**/.*",
+        "build",
+        "~/.vscode/**/*"
+    ],
+    "typeCheckingMode": "off",
+    "strict": [
+        "**/*.py"
+    ]
+}
