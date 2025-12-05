@@ -1,6 +1,5 @@
 from pathling import PathlingContext  # pyright: ignore[reportMissingTypeStubs]
 from pyspark.sql import SparkSession
-from zipp import Path
 
 
 class FutPathlingContext:

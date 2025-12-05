@@ -36,7 +36,7 @@ wheels = [
 ]
 
 [[package]]
-name = "fut-bi"
+name = "spark-bi"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
