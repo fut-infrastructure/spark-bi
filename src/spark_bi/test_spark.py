@@ -5,7 +5,7 @@ TEST_SPARK_HOST = "127.0.0.1"
 
 def test_can_init():
     result = FutPathlingContext._create(  # pyright: ignore[reportPrivateUsage]
-        spark_driver_host=TEST_SPARK_HOST, app_name="TestApp", spark_master_url="local[4]"
+        spark_driver_host=TEST_SPARK_HOST, app_name="TestApp", spark_master_url="local[1]"
     )
     assert result is not None
 

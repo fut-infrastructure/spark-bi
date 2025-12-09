@@ -21,8 +21,14 @@ jobs:
       - name: Install the project
         run: |
           uv sync --dev
+      
+      # Spark and Pathling require newer java
+      - uses: actions/setup-java@v4
+        with:
+          java-version: 21
+          distribution: 'temurin'
 
-      - name: Type check
+      - name: Verify
         run: |
           make verify
 
