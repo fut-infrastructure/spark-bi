@@ -8,3 +8,14 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Credentials
+credentials.py
+
+# Typical outputs
+.ndjson
+.parquet
+.csv
+.png
+.jpg
+.jpeg

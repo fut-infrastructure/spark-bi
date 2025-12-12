@@ -12,6 +12,7 @@ dependencies = [
     "ipykernel>=7.1.0",
     "pandas>=2.3.3",
     "pathling==9.1.0",
+    "pydantic>=2.12.5",
     "pyspark>=4.0.1",
 ]
 

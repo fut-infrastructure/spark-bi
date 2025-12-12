@@ -1,6 +1,8 @@
+import enum
 import logging
 import os
 
+import pydantic
 from pathling import PathlingContext  # pyright: ignore[reportMissingTypeStubs]
 from pyspark.sql import SparkSession
 
@@ -9,6 +11,34 @@ log = logging.getLogger(__name__)
 
 def is_jupyter_hub() -> bool:
     return any("JUPYTERHUB" in key for key in list(os.environ))
+
+
+class S3Credentials(pydantic.BaseModel):
+    region: str
+    access_key: str
+    secret_key: str
+
+    def __post_init__(self):
+        # The S3Credentials are not used if not on JupyterHub, so don't need to strictly validate them
+        if is_jupyter_hub() and ("DUMMY" in self.access_key or "DUMMY" in self.secret_key):
+            raise ValueError(
+                "S3Credentials contain dummy values. Contact FUT-S or TRIFORK to get real ones."
+            )
+
+    def to_hadoop_config(self) -> dict[str, str]:
+        return {
+            "fs.s3a.endpoint.region": self.region,
+            "fs.s3a.access.key": self.access_key,
+            "fs.s3a.secret.key": self.secret_key,
+        }
+
+
+class LogLevel(enum.Enum):
+    ERROR = "ERROR"
+    WARN = "WARN"
+    INFO = "INFO"
+    DEBUG = "DEBUG"
+    TRACE = "TRACE"
 
 
 class FutPathlingContext:
@@ -34,6 +64,7 @@ class FutPathlingContext:
         spark_master_url: str = "spark://spark-master-svc.bi-tools.svc.cluster.local:7077",
         spark_additional_config: dict[str, str] | None = None,
         hadoop_config: dict[str, str] | None = None,
+        spark_log_level: LogLevel = LogLevel.ERROR,
     ) -> PathlingContext:
         import socket
 
@@ -44,6 +75,7 @@ class FutPathlingContext:
             spark_master_url=spark_master_url,
             spark_additional_config=spark_additional_config,
             hadoop_config=hadoop_config,
+            spark_log_level=spark_log_level,
         )
 
     @staticmethod
@@ -53,6 +85,7 @@ class FutPathlingContext:
         spark_master_url: str = "spark://spark-master-svc.bi-tools.svc.cluster.local:7077",
         spark_additional_config: dict[str, str] | None = None,
         hadoop_config: dict[str, str] | None = None,
+        spark_log_level: LogLevel = LogLevel.ERROR,
     ) -> PathlingContext:
         sparkConfig = SparkSession.builder.appName(app_name)
 
@@ -97,4 +130,6 @@ class FutPathlingContext:
             spark._jsc.hadoopConfiguration().set(key, value)  # type: ignore
 
         pc = PathlingContext.create(spark)
+
+        pc.spark.sparkContext.setLogLevel(spark_log_level.value)
         return pc

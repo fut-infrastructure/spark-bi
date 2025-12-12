@@ -17,12 +17,13 @@ Bemærk at Jupyter Notebooks cacher deres resultater _i filen_. Når du kører p
 1. Åben en ny terminal
 2. `cd spark-bi`
 3. `pip install -e .`
-4. Du er nu klar til at køre notebooks.
+4. Kontakt FUT-S/TRIFORK for at få log-in information til S3 (dataopbevaring). Kopiér `credentials_example.py` til `credentials.py`, og udfyld værdierne.
+5. Du er nu klar til at køre notebooks.
 
 ### Kørsel lokalt
 Kørsel lokalt kræver at der findes et delta-lake udtræk lokalt. Et test-udtræk med det rette skema kan rekvireres fra FUT-S/TRIFORK. Dataene skal placeres samme sted som i `data_location.py`, eller der skal rettes i denne fil.
 
-Den nemmeste opsætning er med `uv`, den klart bedste package-manager til Python. Guide til opsætning [her](https://docs.astral.sh/uv/guides/install-python/).
+Den nemmeste opsætning er med `uv`, den bedste package-manager til Python. Guide til opsætning [her](https://docs.astral.sh/uv/guides/install-python/).
 
 1. Kør `uv sync` i roden af projektet
 2. Åben en notebook i VSCode
