@@ -1,5 +1,14 @@
+import logging
+import os
+
 from pathling import PathlingContext  # pyright: ignore[reportMissingTypeStubs]
 from pyspark.sql import SparkSession
+
+log = logging.getLogger(__name__)
+
+
+def is_jupyter_hub() -> bool:
+    return any("JUPYTERHUB" in key for key in list(os.environ))
 
 
 class FutPathlingContext:
@@ -8,6 +17,15 @@ class FutPathlingContext:
         "spark.dynamicAllocation.enabled": "will never release resources",
         "spark.dynamicAllocation.shuffleTracking.enabled": "can block dynamic resource allocation",
         "spark.dynamicAllocation.initialExecutors": "can hog all resources in the cluster",
+    }
+
+    SHARED_SPARK_CONFIG = {  # noqa: RUF012
+        "spark.jars.packages": ",".join(
+            ["au.csiro.pathling:library-runtime:9.1.0", "io.delta:delta-spark_2.13:4.0.0"]
+        ),
+        "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
+        "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
+        "spark.driver.memory": "4g",
     }
 
     @staticmethod
@@ -19,7 +37,7 @@ class FutPathlingContext:
     ) -> PathlingContext:
         import socket
 
-        ip = socket.gethostbyname(socket.gethostname())
+        ip = socket.gethostbyname(socket.gethostname()) if is_jupyter_hub() else "0.0.0.0"
         return FutPathlingContext._create(
             app_name,
             spark_driver_host=ip,
@@ -36,28 +54,30 @@ class FutPathlingContext:
         spark_additional_config: dict[str, str] | None = None,
         hadoop_config: dict[str, str] | None = None,
     ) -> PathlingContext:
-        sparkConfig = SparkSession.builder.appName(app_name).master(spark_master_url)
+        sparkConfig = SparkSession.builder.appName(app_name)
 
         if spark_additional_config is None:
             spark_additional_config = {}
 
-        # XXX: Monkey-patch the ip-address so users don't need to pass it
         if hadoop_config is None:
             hadoop_config = {}
 
-        default_spark_config = {
-            "spark.jars.packages": ",".join(
-                ["au.csiro.pathling:library-runtime:9.1.0", "io.delta:delta-spark_2.13:4.0.0"]
-            ),
-            "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
-            "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
-            "spark.driver.host": spark_driver_host,
-            "spark.driver.bindAddress": "0.0.0.0",
-            "spark.deploy.defaultCores": "1",
-            "spark.dynamicAllocation.enabled": "true",
-            "spark.dynamicAllocation.shuffleTracking.enabled": "true",
-            "spark.dynamicAllocation.initialExecutors": "1",
-        }
+        if is_jupyter_hub():
+            sparkConfig.master(spark_master_url)
+
+            default_spark_config = {
+                **FutPathlingContext.SHARED_SPARK_CONFIG,
+                "spark.driver.host": spark_driver_host,
+                "spark.driver.bindAddress": "0.0.0.0",
+                "spark.deploy.defaultCores": "1",
+                "spark.dynamicAllocation.enabled": "true",
+                "spark.dynamicAllocation.shuffleTracking.enabled": "true",
+                "spark.dynamicAllocation.initialExecutors": "1",
+            }
+        else:
+            log.info("Not in JupyterHub, disregarding spark_driver_host and spark_master_url")
+
+            default_spark_config = FutPathlingContext.SHARED_SPARK_CONFIG
 
         for key, value in default_spark_config.items():
             sparkConfig.config(key, value)
