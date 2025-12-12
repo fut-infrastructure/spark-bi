@@ -10,6 +10,9 @@ Pathling tillader at skrive [FHIRPath](https://www.whitefox.cloud/articles/fhirp
 
 Alle eksemplerne følger denne fremgangsmåde.
 
+### Deling a Jupyter Notebooks
+Bemærk at Jupyter Notebooks cacher deres resultater _i filen_. Når du kører på testdata kan du se bort fra dette, men hvis resultaterne indeholder personfølsom information vil disse være indeholdt i notebook'en. Du bør derfor _ikke_ pushe dem til `fut-infrastructure/spark-bi`.
+
 ### Kørsel på JupyterHub
 1. Åben en ny terminal
 2. `cd spark-bi`
