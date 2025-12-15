@@ -15,7 +15,7 @@ Bemærk at Jupyter Notebooks cacher deres resultater _i filen_. Når du kører p
 
 ### Kørsel på JupyterHub
 1. Åben en ny terminal
-2. Hvis du ikke allerede har gjort det, så klon det nuværende repository (`git clone https://github.com/fut-infrastructure/spark-bi/tree/main/example-reports`)
+2. Hvis du ikke allerede har gjort det, så klon det nuværende repository (`git clone https://github.com/fut-infrastructure/spark-bi/`)
 3. `cd spark-bi`
 4. `pip install -e .`
 5. Kontakt FUT-S/TRIFORK for at få log-in information til S3 (dataopbevaring). Kopiér `credentials_example.py` til `credentials.py`, og udfyld værdierne.
