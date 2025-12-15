@@ -15,10 +15,11 @@ Bemærk at Jupyter Notebooks cacher deres resultater _i filen_. Når du kører p
 
 ### Kørsel på JupyterHub
 1. Åben en ny terminal
-2. `cd spark-bi`
-3. `pip install -e .`
-4. Kontakt FUT-S/TRIFORK for at få log-in information til S3 (dataopbevaring). Kopiér `credentials_example.py` til `credentials.py`, og udfyld værdierne.
-5. Du er nu klar til at køre notebooks.
+2. Hvis du ikke allerede har gjort det, så klon det nuværende repository (`git clone https://github.com/fut-infrastructure/spark-bi/tree/main/example-reports`)
+3. `cd spark-bi`
+4. `pip install -e .`
+5. Kontakt FUT-S/TRIFORK for at få log-in information til S3 (dataopbevaring). Kopiér `credentials_example.py` til `credentials.py`, og udfyld værdierne.
+6. Du er nu klar til at køre notebooks.
 
 ### Kørsel lokalt
 Kørsel lokalt kræver at der findes et delta-lake udtræk lokalt. Et test-udtræk med det rette skema kan rekvireres fra FUT-S/TRIFORK. Dataene skal placeres samme sted som i `data_location.py`, eller der skal rettes i denne fil.
