@@ -100,7 +100,6 @@ class FutPathlingContext:
 
             default_spark_config = {
                 **FutPathlingContext.SHARED_SPARK_CONFIG,
-                "spark.cores.max": "1000",
                 "spark.driver.host": spark_driver_host,
                 "spark.driver.bindAddress": "0.0.0.0",
             }
