@@ -100,12 +100,9 @@ class FutPathlingContext:
 
             default_spark_config = {
                 **FutPathlingContext.SHARED_SPARK_CONFIG,
+                "spark.cores.max": "1000",
                 "spark.driver.host": spark_driver_host,
                 "spark.driver.bindAddress": "0.0.0.0",
-                "spark.deploy.defaultCores": "1",
-                "spark.dynamicAllocation.enabled": "true",
-                "spark.dynamicAllocation.shuffleTracking.enabled": "true",
-                "spark.dynamicAllocation.initialExecutors": "1",
             }
         else:
             log.info("Not in JupyterHub, disregarding spark_driver_host and spark_master_url")
