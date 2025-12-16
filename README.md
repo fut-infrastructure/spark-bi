@@ -33,16 +33,13 @@ Den nemmeste opsætning er med `uv`, den bedste package-manager til Python. Guid
 
 Resultaterne dukker op.
 
-# Data
-Rapporterne her er kørt på data fra TRIFORKs testmiljø. Derfor afspejler resultaterne _ikke_ produktion, og ser meget underlige ud.
-
 # FHIRPath
 FHIRPath queries kan med fordel testes på en testresource på [denne hjemmeside](https://hl7.github.io/fhirpath.js/). Hvis FHIRPath-udtrykket bruger relevante funktioner, men f.eks. efterspørger en extension der ikke findes på ressorucen, vil Pathling blot returnere "None" som værdi.
 
 Pathling har desuden en række eksempler i deres [dokumentation](https://pathling.csiro.au/docs/libraries/examples/prostate-cancer).
 
 # Performance
-Som udgangspunkt, så skalerer Spark selv antallet af cores, hukommelse of executors, hvis en query tager lang tid. Hvis der er brug for manuel kontrol, kan `FutPathlingContext.create` tage spark parametre:
+Som udgangspunkt skalerer Spark selv antallet af cores og hukommelse of executors, hvis en query tager lang tid. Hvis der er brug for manuel kontrol, kan `FutPathlingContext.create` tage spark parametre:
 * `spark.cores.max`: hvor mange cores der kan allokeres til jobbet på tværs af executors (total cores)
 * `spark.executor.cores`: hvor mange cores der allokeres til hver executor (worker JVM)
 * `spark.executor.memory`: hvor meget hukommelse der allokeres til hver executor (worker JVM)
@@ -50,3 +47,13 @@ Som udgangspunkt, så skalerer Spark selv antallet af cores, hukommelse of execu
 Sparks dokumentation giver et fint overblik over disse:
 * [Spark Cluster Mode Overview](https://spark.apache.org/docs/latest/cluster-overview.html)
 * [Spark Scheduling Configuration](https://spark.apache.org/docs/latest/configuration.html#scheduling)
+
+# Data
+Rapporterne her er kørt på data fra TRIFORKs testmiljø. Derfor afspejler resultaterne _ikke_ produktion, og ser meget underlige ud.
+
+## Organisatorisk enhed
+Jeg er usikker på, om vi kan entydigt identificere organisatoriske enheder.
+
+De organisatoriske enheder vil være repræsenterede som `ehealth-organization`, men en `ehealth-organization` er ikke opmærket med, hvilket niveau i SOR den afspejler.
+
+En mulighed ville være at downloade hele SOR, finde kun de organisationer der har `SOR-type == "Organisatorisk enhed"`, og så bruge dette til at filtrere. Det udskydes for nuværende.
