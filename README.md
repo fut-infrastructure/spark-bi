@@ -51,6 +51,11 @@ Sparks dokumentation giver et fint overblik over disse:
 # Data
 Rapporterne her er kørt på data fra TRIFORKs testmiljø. Derfor afspejler resultaterne _ikke_ produktion, og ser meget underlige ud.
 
+## Kommune
+Det viser sig, at meget få episodes-of-care har en kommune tilknyttet på TRIFORKs testmiljø. Derfor bruges typisk patientens bopælskommune som proxy for e.g. en spørgeskemabesvarelses "kommune". 
+
+I produktion bør man overveje, om man vil bruge `QuestionnaireResponse.episodeOfCare.managingOrganization.municipalityCode`.
+
 ## Organisatorisk enhed
 Jeg er usikker på, om vi kan entydigt identificere organisatoriske enheder.
 
