@@ -1,13 +1,13 @@
 import pyspark
 import pyspark.sql
-from pathling import DataSource
+from pathling import DataSource  # pyright: ignore[reportMissingTypeStubs]
 from pyspark.sql.functions import col, when
 
-from spark_bi.constants import ColNames, Extensions
+from spark_bi.constants import ColNames
 
 
 def compute_patient2municipality(delta_lake: DataSource) -> pyspark.sql.DataFrame:
-    patients_with_municipality = delta_lake.view(
+    patients_with_municipality = delta_lake.view(  # pyright: ignore[reportUnknownMemberType]
         resource="Patient",
         select=[
             {
@@ -25,7 +25,7 @@ def compute_patient2municipality(delta_lake: DataSource) -> pyspark.sql.DataFram
 
 
 def compute_patient2region(delta_lake: DataSource) -> pyspark.sql.DataFrame:
-    patients_with_region = delta_lake.view(
+    patients_with_region = delta_lake.view(  # pyright: ignore[reportUnknownMemberType]
         resource="Patient",
         select=[
             {
@@ -63,7 +63,7 @@ def add_region_name_col(df: pyspark.sql.DataFrame) -> pyspark.sql.DataFrame:
 
 
 def compute_patient2condition(delta_lake: DataSource) -> pyspark.sql.DataFrame:
-    conditions_with_code = delta_lake.view(
+    conditions_with_code = delta_lake.view(  # pyright: ignore[reportUnknownMemberType]
         resource="Condition",
         select=[
             {
@@ -75,7 +75,7 @@ def compute_patient2condition(delta_lake: DataSource) -> pyspark.sql.DataFrame:
         ],
     )
 
-    careplans_with_eoc = delta_lake.view(
+    careplans_with_eoc = delta_lake.view(  # pyright: ignore[reportUnknownMemberType]
         resource="CarePlan",
         select=[
             {
@@ -91,7 +91,7 @@ def compute_patient2condition(delta_lake: DataSource) -> pyspark.sql.DataFrame:
         ],
     )
 
-    eoc_with_pt_id = delta_lake.view(
+    eoc_with_pt_id = delta_lake.view(  # pyright: ignore[reportUnknownMemberType]
         resource="EpisodeOfCare",
         select=[
             {
