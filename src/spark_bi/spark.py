@@ -20,7 +20,9 @@ class S3Credentials(pydantic.BaseModel):
 
     def __post_init__(self):
         # The S3Credentials are not used if not on JupyterHub, so don't need to strictly validate them
-        if is_jupyter_hub() and ("DUMMY" in self.access_key or "DUMMY" in self.secret_key):
+        if is_jupyter_hub() and (
+            "DUMMY" in self.access_key or "DUMMY" in self.secret_key
+        ):
             raise ValueError(
                 "S3Credentials contain dummy values. Contact FUT-S or TRIFORK to get real ones."
             )
@@ -51,12 +53,17 @@ class FutPathlingContext:
 
     SHARED_SPARK_CONFIG = {  # noqa: RUF012
         "spark.jars.packages": ",".join(
-            ["au.csiro.pathling:library-runtime:9.1.0", "io.delta:delta-spark_2.13:4.0.0"]
+            [
+                "au.csiro.pathling:library-runtime:9.1.0",
+                "io.delta:delta-spark_2.13:4.0.0",
+            ]
         ),
         "spark.sql.extensions": "io.delta.sql.DeltaSparkSessionExtension",
         "spark.sql.catalog.spark_catalog": "org.apache.spark.sql.delta.catalog.DeltaCatalog",
         "spark.driver.memory": "4g",
-        "spark.hadoop.fs.s3a.aws.credentials.provider":"org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
+        "spark.hadoop.fs.s3a.aws.credentials.provider": "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
+        "spark.driver.extraJavaOptions": "-Djava.security.manager=allow",
+        "spark.executor.extraJavaOptions": "-Djava.security.manager=allow",
     }
 
     @staticmethod
@@ -69,7 +76,11 @@ class FutPathlingContext:
     ) -> PathlingContext:
         import socket
 
-        ip = socket.gethostbyname(socket.gethostname()) if is_jupyter_hub() else "0.0.0.0"
+        ip = (
+            socket.gethostbyname(socket.gethostname())
+            if is_jupyter_hub()
+            else "0.0.0.0"
+        )
         return FutPathlingContext._create(
             app_name,
             spark_driver_host=ip,
@@ -88,6 +99,18 @@ class FutPathlingContext:
         hadoop_config: dict[str, str] | None = None,
         spark_log_level: LogLevel = LogLevel.ERROR,
     ) -> PathlingContext:
+        # Hadoop's UserGroupInformation calls Subject.getSubject(AccessControlContext),
+        # which throws UnsupportedOperationException on JDK 18+ unless the JVM is
+        # started with -Djava.security.manager=allow. The failure happens in the
+        # spark-submit launcher JVM (before spark.driver.extraJavaOptions is applied),
+        # so we must set it via the env var that PySpark forwards to that process.
+        _security_manager_flag = "-Djava.security.manager=allow"
+        existing_submit_opts = os.environ.get("SPARK_SUBMIT_OPTS", "")
+        if _security_manager_flag not in existing_submit_opts:
+            os.environ["SPARK_SUBMIT_OPTS"] = (
+                f"{existing_submit_opts} {_security_manager_flag}".strip()
+            )
+
         sparkConfig = SparkSession.builder.appName(app_name)
 
         if spark_additional_config is None:
@@ -105,7 +128,9 @@ class FutPathlingContext:
                 "spark.driver.bindAddress": "0.0.0.0",
             }
         else:
-            log.info("Not in JupyterHub, disregarding spark_driver_host and spark_master_url")
+            log.info(
+                "Not in JupyterHub, disregarding spark_driver_host and spark_master_url"
+            )
 
             default_spark_config = FutPathlingContext.SHARED_SPARK_CONFIG
 
